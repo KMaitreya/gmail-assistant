@@ -1,21 +1,25 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import axios from "axios";
 
-export function Input() {
+export function Input({onSendMessage}: {onSendMessage?: (message: string) => void}) {
 
     const [message, setMessage] = useState("");
 
-    const handleChange=(e) => {
+    const handleChange=(e: { target: { value: SetStateAction<string>; }; }) => {
         setMessage(e.target.value);
     };
 
-    const handleSubmit = async (e)=>{
+    const handleSubmit = async (e: { preventDefault: () => void; })=>{
         e.preventDefault();
 
         if (message.trim()){
             try{
                 await axios.post('http://127.0.0.1:5001/message',{message});
                 console.log("Message sent to backend:", message);
+                
+                if (onSendMessage) {
+                    onSendMessage(message);
+                }
             }
             catch (error){
                 console.error("Error sending message to backend:", error);

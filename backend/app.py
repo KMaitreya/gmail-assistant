@@ -14,18 +14,17 @@ API_KEY=os.getenv('API_KEY')
 
 # Allow React (frontend on port 3000) to access the backend
 CORS(app)
-data=None
 
 @app.route('/response')
 def response():
-    return jsonify({'message': data})
+    return jsonify({'message': 'Hello from the backend!'})
 
 @app.route('/message', methods=['POST'])
 def message():
     raw=request.get_json()
     data=raw.get('message')
-    print(data, raw)
-    return jsonify({'message': raw})
+    print(data, raw, request.content_type, request)
+    return jsonify({'message': data})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
