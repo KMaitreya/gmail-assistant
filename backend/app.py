@@ -17,7 +17,7 @@ CORS(app)
 
 @app.route('/')
 def main_page():
-    return jsonify({'message': API_KEY})
+    return jsonify({'message': "We are ready to go"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
