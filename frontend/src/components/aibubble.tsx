@@ -1,4 +1,4 @@
-export function AIbubble(){
+export function AIbubble({message}: {message: string}) {
     return (
         <div className="flex items-center space-x-4 w-full mt-4">
             <div className="w-10 h-10 rounded-full">
@@ -9,7 +9,7 @@ export function AIbubble(){
                 />
             </div>
             <div className="bg-gray-200 text-gray-800 p-3 rounded-lg max-w-full break-words flex-grow">
-                Test message from AI
+                {message}
             </div>
         </div>
     )
