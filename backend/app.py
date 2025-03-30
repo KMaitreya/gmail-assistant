@@ -2,15 +2,26 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-import langchain as lc
+from google import genai
+
 
 # Load environment variables from .env file
 load_dotenv()
 
 app=Flask(__name__)
 
-# Load api key
-API_KEY=os.getenv('API_KEY')
+#load the API key from the environment variable
+API_KEY = os.getenv('API_KEY')
+print(API_KEY)  # Print the API key for debugging purposes (ensure to remove this in production)
+
+
+def Gemini(message):
+    client = genai.Client(api_key=API_KEY)  # Initialize the Gemini client with the API key
+    response=client.models.generate_content(
+        model='gemini-1.5-pro',
+        contents=message
+    )
+    return response.text
 
 # Allow React (frontend on port 3000) to access the backend
 CORS(app)
@@ -23,8 +34,9 @@ def response():
 def message():
     raw=request.get_json()
     data=raw.get('message')
-    print(data, raw, request.content_type, request)
-    return jsonify({'message': data})
+    response=Gemini(data)
+    print(data, response)  # Print the input and output for debugging purposes
+    return jsonify({'message': response})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
