@@ -33,6 +33,7 @@ export function Chat() {
           } else {
             setUserImg(null);
           }
+          setMessages([]);
         });
       }, []);
 
