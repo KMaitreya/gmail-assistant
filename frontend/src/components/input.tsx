@@ -16,7 +16,7 @@ export function Input({onSendMessage}: {onSendMessage?: (message: string) => voi
             try{
                 await axios.post('http://127.0.0.1:5001/message',{message});
                 console.log("Message sent to backend:", message);
-                
+
                 if (onSendMessage) {
                     onSendMessage(message);
                 }
@@ -29,7 +29,7 @@ export function Input({onSendMessage}: {onSendMessage?: (message: string) => voi
     };
 
     return (
-        <form onSubmit={handleSubmit} className="w-full mt-8">
+        <form onSubmit={handleSubmit} className="w-full m-4">
             <label htmlFor="inputField" className="sr-only">Enter your message</label>
             <div className="relative">
                 <input 
