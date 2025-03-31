@@ -1,8 +1,9 @@
 import { AIbubble } from "./aibubble";
 import {Userbubble} from "./userbubble";
 import {Input} from './input';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import axios from "axios";
+import { onAuthChange} from "../firebase"; // Ensure you have the correct import for Firebase auth state change
 
 export function Chat() {
 
@@ -23,12 +24,25 @@ export function Chat() {
         }
     }
 
+    const [userImg, setUserImg] = useState<string | null>(null);
+
+    useEffect(() => {
+        onAuthChange((user) => {
+          if (user) {
+            setUserImg(user.photoURL);
+          } else {
+            setUserImg(null);
+          }
+        });
+      }, []);
+
+
     return (
         <div className="w-full flex justify-center items-center">
             <div className="w-2/3 flex flex-col items-center">
                 {messages.map((msg)=>{
                     if (msg.sender=='user'){
-                        return <Userbubble message={msg.text}/>
+                        return <Userbubble message={msg.text} img={userImg || ''}/>
                     }
                     else{
                         return <AIbubble message={msg.text} />

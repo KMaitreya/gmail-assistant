@@ -1,9 +1,9 @@
-export function Userbubble({message}: {message: string}) {
+export function Userbubble({message, img}: {message: string; img: string}) {
     return (
         <div className="flex items-center space-x-4 w-full mt-4">
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                 <img
-                src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" // Example AI Logo
+                src={img} // Example AI Logo
                 alt="AI Logo"
                 className="w-full h-full object-cover rounded-full"
                 />

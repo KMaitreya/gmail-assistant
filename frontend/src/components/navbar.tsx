@@ -1,42 +1,47 @@
+import { useState } from "react";
 import {
-    Avatar,
-    Dropdown,
-    DropdownDivider,
-    DropdownHeader,
-    DropdownItem,
-    Navbar,
-    NavbarBrand,
-    NavbarToggle,
-  } from "flowbite-react";
-  
-  export function Navigation() {
-    return (
-      <Navbar fluid className="bg-gray-900">
-        <NavbarBrand href="https://flowbite-react.com">
-          <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" />
-          <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Gmail Assistant</span>
-        </NavbarBrand>
-        <div className="flex md:order-2">
-          <Dropdown
-            arrowIcon={false}
-            inline
-            label={
-              <Avatar alt="User settings" img="https://flowbite.com/docs/images/people/profile-picture-5.jpg" rounded />
-            }
-          >
+  Avatar,
+  Dropdown,
+  DropdownHeader,
+  DropdownItem,
+  Navbar,
+  NavbarBrand,
+  NavbarToggle,
+} from "flowbite-react";
+import { signInWithGoogle, logout } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+export function Navigation() {
+  const [user, setUser] = useState<any>(null);
+
+  // Firebase Authentication State Listener
+  const auth = getAuth();
+  onAuthStateChanged(auth, (currentUser) => {
+    setUser(currentUser);
+  });
+
+  return (
+    <Navbar fluid className="bg-gray-900">
+      <NavbarBrand href="#">
+        <img src="/favicon.svg" className="mr-3 h-6 sm:h-9" alt="Flowbite React Logo" />
+        <span className="self-center whitespace-nowrap text-xl font-semibold text-white">Gmail Assistant</span>
+      </NavbarBrand>
+      <div className="flex md:order-2">
+        {user ? (
+          <Dropdown arrowIcon={false} inline label={<Avatar alt="User settings" img={user.photoURL} rounded />}>
             <DropdownHeader>
-              <span className="block text-sm">John Doe</span>
-              <span className="block truncate text-sm font-medium">name@flowbite.com</span>
+              <span className="block text-sm">{user.displayName}</span>
+              <span className="block truncate text-sm font-medium">{user.email}</span>
             </DropdownHeader>
-            <DropdownItem>Dashboard</DropdownItem>
-            <DropdownItem>Settings</DropdownItem>
-            <DropdownItem>Earnings</DropdownItem>
-            <DropdownDivider />
-            <DropdownItem>Sign out</DropdownItem>
+            <DropdownItem onClick={logout}>Sign out</DropdownItem>
           </Dropdown>
-          <NavbarToggle />
-        </div>
-      </Navbar>
-    );
-  }
-  
+        ) : (
+          <button onClick={signInWithGoogle} className="bg-blue-500 text-white px-4 py-2 rounded-lg">
+            Sign in with Google
+          </button>
+        )}
+        <NavbarToggle />
+      </div>
+    </Navbar>
+  );
+}

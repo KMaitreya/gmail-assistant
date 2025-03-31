@@ -1,11 +1,10 @@
 import { SetStateAction, useState } from "react";
-import axios from "axios";
 
 export function Input({onSendMessage}: {onSendMessage?: (message: string) => void}) {
 
     const [message, setMessage] = useState("");
     
-    const handleChange=(e: { target: { value: SetStateAction<string>; }; }) => {
+    const handleChange=(e: { target: { value: SetStateAction<string>;}; }) => {
         setMessage(e.target.value);
     };
 
