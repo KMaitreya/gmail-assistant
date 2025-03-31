@@ -4,19 +4,17 @@ import axios from "axios";
 export function Input({onSendMessage}: {onSendMessage?: (message: string) => void}) {
 
     const [message, setMessage] = useState("");
-
+    
     const handleChange=(e: { target: { value: SetStateAction<string>; }; }) => {
         setMessage(e.target.value);
     };
 
+    // function to handle user input
     const handleSubmit = async (e: { preventDefault: () => void; })=>{
         e.preventDefault();
 
         if (message.trim()){
             try{
-                await axios.post('http://127.0.0.1:5001/message',{message});
-                console.log("Message sent to backend:", message);
-
                 if (onSendMessage) {
                     onSendMessage(message);
                 }
