@@ -4,7 +4,7 @@ export function AIbubble({ message }: { message: string }) {
             {/* AI logo container with fixed size */}
             <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
                 <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png" // Example AI Logo
+                    src="https://img.icons8.com/ios-filled/50/mailbox-opened-flag-down.png" // Example AI Logo
                     alt="AI Logo"
                     className="w-full h-full object-cover"
                 />
