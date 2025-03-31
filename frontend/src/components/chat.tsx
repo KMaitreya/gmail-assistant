@@ -38,19 +38,26 @@ export function Chat() {
         });
       }, []);
 
+    
+    const renderMessages = () => {
+        if (messages.length==0){
+            return <Empty />
+        }
+        else{
+            return messages.map((msg) => {
+                if (msg.sender === 'user') {
+                    return <Userbubble message={msg.text} img={userImg || ''} />;
+                } else {
+                    return <AIbubble message={msg.text} />;
+                }
+            });
+        }}
+
 
     return (
         <div className="w-full flex justify-center items-center">
             <div className="w-2/3 flex flex-col items-center">
-            <Empty />
-                {messages.map((msg)=>{
-                    if (msg.sender=='user'){
-                        return <Userbubble message={msg.text} img={userImg || ''}/>
-                    }
-                    else{
-                        return <AIbubble message={msg.text} />
-                    }
-            })}
+                {renderMessages()}
                 <Input onSendMessage={handleSendMessage}/>
             </div>
         </div>
