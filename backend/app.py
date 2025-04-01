@@ -3,7 +3,8 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 from google import genai
-
+import markdown
+import re
 
 # Load environment variables from .env file
 load_dotenv()
@@ -11,8 +12,7 @@ load_dotenv()
 app=Flask(__name__)
 
 #load the API key from the environment variable
-API_KEY = os.getenv('API_KEY')
-print(API_KEY)  # Print the API key for debugging purposes (ensure to remove this in production)
+API_KEY = os.getenv('API_KEY')  # Print the API key for debugging purposes (ensure to remove this in production)
 
 
 def Gemini(message):
@@ -21,7 +21,8 @@ def Gemini(message):
         model='gemini-1.5-pro',
         contents=message
     )
-    return response.text
+    response=markdown.markdown(response.text)
+    return response
 
 # Allow React (frontend on port 3000) to access the backend
 CORS(app)
