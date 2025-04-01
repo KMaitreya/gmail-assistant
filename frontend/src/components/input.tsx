@@ -2,7 +2,7 @@ import { SetStateAction, useState, useRef, useEffect } from "react";
 
 export function Input({onSendMessage, setInputHeight}: {onSendMessage?: (message: string) => void; setInputHeight: (height: number) => void;}) {
 
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLFormElement>(null);  // Reference the form instead of the input
 
     const [message, setMessage] = useState("");
     
@@ -29,14 +29,13 @@ export function Input({onSendMessage, setInputHeight}: {onSendMessage?: (message
 
     useEffect(() => {
         if (inputRef.current) {
-          setInputHeight(inputRef.current.offsetHeight);
+          setInputHeight(inputRef.current.offsetHeight); // Ensure inputRef points to the correct element
         }
-      }, []);
+    }, []);
 
     return (
         <div>
-            <div className=" fixed h-screen"></div>
-            <form onSubmit={handleSubmit} className=" bg-white fixed bottom-0 left-1/2 w-2/3 m-4 z-50 transform -translate-x-1/2">
+            <form ref={inputRef} onSubmit={handleSubmit} className="bg-white fixed bottom-0 left-1/2 w-2/3 m-4 z-50 transform -translate-x-1/2">
                 <label htmlFor="inputField" className="sr-only">Enter your message</label>
                 <div className="relative">
                     <input 
@@ -57,5 +56,5 @@ export function Input({onSendMessage, setInputHeight}: {onSendMessage?: (message
                 </div>
             </form>
         </div>
-    )
+    );
 }
