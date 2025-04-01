@@ -1,6 +1,8 @@
-import { SetStateAction, useState } from "react";
+import { SetStateAction, useState, useRef, useEffect } from "react";
 
-export function Input({onSendMessage}: {onSendMessage?: (message: string) => void}) {
+export function Input({onSendMessage, setInputHeight}: {onSendMessage?: (message: string) => void; setInputHeight: (height: number) => void;}) {
+
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const [message, setMessage] = useState("");
     
@@ -24,6 +26,12 @@ export function Input({onSendMessage}: {onSendMessage?: (message: string) => voi
         }
         setMessage("");
     };
+
+    useEffect(() => {
+        if (inputRef.current) {
+          setInputHeight(inputRef.current.offsetHeight);
+        }
+      }, []);
 
     return (
         <div>

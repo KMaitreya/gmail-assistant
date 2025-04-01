@@ -8,6 +8,8 @@ import { onAuthChange} from "../firebase"; // Ensure you have the correct import
 
 export function Chat() {
 
+    const [inputHeight, setInputHeight]=useState(0);
+
     const [messages, setMessages]=useState<{text: string, sender: 'user'| 'ai'}[]>([]);
 
     const handleSendMessage=async (message:String)=>{
@@ -58,7 +60,8 @@ export function Chat() {
         <div className="w-full flex justify-center items-center">
             <div className="w-2/3 flex flex-col items-center">
                 {renderMessages()}
-                <Input onSendMessage={handleSendMessage}/>
+                <div style={{height: inputHeight}}/>
+                <Input onSendMessage={handleSendMessage} setInputHeight={setInputHeight}/>
             </div>
         </div>
     )
