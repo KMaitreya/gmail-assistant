@@ -9,6 +9,12 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
+from google import genai  # Gemini API client
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+from googleapiclient.discovery import build
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -35,7 +41,7 @@ def authenticate_gmail():
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=0)
+            creds = flow.run_local_server(port=5002)
         with open('token.json', 'w') as token:
             token.write(creds.to_json())
     return creds
@@ -83,11 +89,18 @@ def Gemini(message):
     """
     Sends a prompt to the Gemini API and returns the generated response.
     """
-    client = genai.GenerativeModel(model_name='gemini-1.5-pro', api_key=API_KEY)
-    response = client.generate_content([message])
 
-    if response and response.candidates:
-        return response.candidates[0].content
+    client=genai.Client(api_key=API_KEY)
+    response = client.models.generate_content(
+        model='gemini-1.5-pro',
+        contents=message
+    )
+
+    if response:
+        return response.text
+    
+    # if response and response.candidates:
+    #     return response.candidates[0].content
     return "No response from Gemini."
 
 @app.route('/response')
@@ -120,6 +133,7 @@ def message():
     
     gemini_response = Gemini(combined_prompt)
     return jsonify({'message': gemini_response})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

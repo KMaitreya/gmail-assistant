@@ -31,7 +31,7 @@ export function Chat() {
         setMessages((prevMessages) => [...prevMessages, { text: "", sender: "ai" }]);
 
         try {
-            const response = await axios.post("https://flask-app-219359066561.us-east5.run.app/message", { message });
+            const response = await axios.post("http://127.0.0.1:5001/message", { message });
             const aires = response.data.message;
 
             // Replace last AI message with actual response
