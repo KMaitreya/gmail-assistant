@@ -35,7 +35,7 @@ export function Input({onSendMessage, setInputHeight}: {onSendMessage?: (message
 
     return (
         <div>
-            <form ref={inputRef} onSubmit={handleSubmit} className="bg-white fixed bottom-0 left-1/2 w-2/3 m-4 z-50 transform -translate-x-1/2">
+            <form ref={inputRef} onSubmit={handleSubmit} className="bg-gray-200 fixed bottom-0 left-1/2 w-2/3 mb-4 z-50 transform -translate-x-1/2 border-4 rounded-xl ">
                 <label htmlFor="inputField" className="sr-only">Enter your message</label>
                 <div className="relative">
                     <input 

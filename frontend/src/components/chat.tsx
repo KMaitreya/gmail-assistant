@@ -68,7 +68,7 @@ export function Chat() {
     return (
         <div className="w-full flex justify-center items-center">
             <div className="w-2/3 flex flex-col items-center">
-                <div className="w-full fixed bg-dark-100 z-100 b-100"></div>
+                {/* <div className="w-full fixed bg-dark-100 z-100 b-100"></div> */}
                 {renderMessages()}
                 <div className="m-4" style={{ height: inputHeight }} />
                 <div className="fixed bottom-0 w-full bg-white z-40" style={{ height: inputHeight }} />

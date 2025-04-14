@@ -9,17 +9,11 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
 
-from google import genai  # Gemini API client
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from googleapiclient.discovery import build
-
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True, origins=["http://localhost:5173"])
 
 # Load the Gemini API key from environment
 API_KEY = os.getenv('API_KEY')
@@ -27,24 +21,68 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 
 # Global variable to store preloaded email context
 ALL_EMAILS = []
+email=None
+
+@app.route('/email', methods=['POST'])
+def create_token():
+    global email
+    raw=request.get_json()
+    email=raw.get('email')
+    filename=f"./tokens/{email}.json"
+
+    creds = None
+    if os.path.exists(filename):
+        creds = Credentials.from_authorized_user_file(filename, SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(
+                    port=5002,
+                    authorization_prompt_message='Please visit this URL: {url}',
+                    success_message='Authorization complete. You may close this window.',
+                    open_browser=True,
+                    access_type='offline',
+                    prompt='consent'  # <- this is what forces Google to reissue refresh tokens
+)
+        with open(filename, 'w') as token:
+            token.write(creds.to_json())
+
+    return jsonify({'message': 'Token created successfully!'})
 
 def authenticate_gmail():
     """
     Handles Gmail API authentication using OAuth 2.0.
     Checks for stored credentials in token.json and refreshes or requests new ones if needed.
     """
-    creds = None
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
-            creds = flow.run_local_server(port=5002)
-        with open('token.json', 'w') as token:
-            token.write(creds.to_json())
-    return creds
+    # creds = None
+    # if os.path.exists('token.json'):
+    #     creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    #     print(creds.to_json())
+    # if not creds or not creds.valid:
+    #     if creds and creds.expired and creds.refresh_token:
+    #         creds.refresh(Request())
+    #     else:
+    #         flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+    #         creds = flow.run_local_server(port=5002)
+    #     with open('token.json', 'w') as token:
+    #         token.write(creds.to_json())
+    # return creds
+
+    # global token
+
+    # if not token:
+    #     return jsonify({'message': 'No token provided'}), 400
+    # creds = Credentials(token=token, scopes=SCOPES)
+
+    # if creds and creds.expired and creds.refresh_token:
+    #     creds.refresh(Request())
+
+    # return creds
+    global email
+
+    return Credentials.from_authorized_user_file(f"./tokens/{email}.json", SCOPES)
 
 def get_all_emails():
     """
@@ -52,6 +90,9 @@ def get_all_emails():
     This example fetches emails from the last day; modify the query as needed.
     """
     creds = authenticate_gmail()
+    if not creds:
+        return []
+    print(creds)
     service = build('gmail', 'v1', credentials=creds)
     results = service.users().messages().list(userId='me', labelIds=['INBOX'], q='newer_than:1d').execute()
     messages = results.get('messages', [])
