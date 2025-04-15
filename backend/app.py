@@ -22,10 +22,14 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 # Global variable to store preloaded email context
 ALL_EMAILS = []
 email=None
+email_context=None
 
 @app.route('/email', methods=['POST'])
 def create_token():
     global email
+    global ALL_EMAILS
+    global email_context
+
     raw=request.get_json()
     email=raw.get('email')
     filename=f"./tokens/{email}.json"
@@ -48,6 +52,11 @@ def create_token():
 )
         with open(filename, 'w') as token:
             token.write(creds.to_json())
+
+      # Ensure we're working with the latest emails
+    ALL_EMAILS = get_all_emails()
+    email_context = format_email_context(ALL_EMAILS)
+    print(email_context)
 
     return jsonify({'message': 'Token created successfully!'})
 
@@ -81,7 +90,6 @@ def authenticate_gmail():
 
     # return creds
     global email
-
     return Credentials.from_authorized_user_file(f"./tokens/{email}.json", SCOPES)
 
 def get_all_emails():
@@ -92,9 +100,8 @@ def get_all_emails():
     creds = authenticate_gmail()
     if not creds:
         return []
-    print(creds)
     service = build('gmail', 'v1', credentials=creds)
-    results = service.users().messages().list(userId='me', labelIds=['INBOX'], q='newer_than:1d').execute()
+    results = service.users().messages().list(userId='me', labelIds=['INBOX'], q='newer_than:3d').execute()
     messages = results.get('messages', [])
     
     if not messages:
@@ -158,10 +165,7 @@ def message():
     Fetches the latest emails, combines them with the question, sends it to Gemini,
     and returns the response.
     """
-    global ALL_EMAILS  # Ensure we're working with the latest emails
-    ALL_EMAILS = get_all_emails()
-    
-    email_context = format_email_context(ALL_EMAILS)
+    global email_context
 
     raw = request.get_json()
     question = raw.get('message', '')
