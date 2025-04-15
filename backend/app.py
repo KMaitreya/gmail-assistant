@@ -23,6 +23,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 ALL_EMAILS = []
 email=None
 email_context=None
+conversation=""
 
 @app.route('/email', methods=['POST'])
 def create_token():
@@ -166,6 +167,7 @@ def message():
     and returns the response.
     """
     global email_context
+    global conversation
 
     raw = request.get_json()
     question = raw.get('message', '')
@@ -173,10 +175,13 @@ def message():
     # Build the prompt using the latest email context and the user's question.
     combined_prompt = (
         f"Here are your recent emails:\n{email_context}\n\n"
+        f"Here are the previous conversation:\n{conversation}\n\n"
         f"Now answer this question based on them:\n{question}"
     )
     
     gemini_response = Gemini(combined_prompt)
+    conversation+=f"\n\nQuestion: {question}"
+    
     return jsonify({'message': gemini_response})
 
 
